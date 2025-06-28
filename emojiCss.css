@@ -329,7 +329,7 @@
             margin-bottom: 20px;
             padding-left: 50px;
             position: relative;
-            font-size: 20px;
+            font-size: 20%;
             line-height: 1.4;
             color: var(--color-text);
         }
