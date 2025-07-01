@@ -71,9 +71,10 @@ io.on('connection', (socket) => {
   
 
   // 💬 Chat handler
-  socket.on('chat-message', (msg) => {
-    io.emit('chat-message', msg);
-  });
+  
+  socket.on('chat-message', (data) => {
+  io.emit('chat-message', data); // Just forward the object
+});
 
   // 🎨 Drawing handler
   socket.on('draw', (data) => {

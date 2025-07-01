@@ -1,10 +1,12 @@
 // ChatApp.jsx
-import React, { useEffect, useState } from 'react';
+
 import socket from './Socket'; // match your backend URL
+import React, { useEffect, useRef, useState } from 'react';
 
 function ChatApp() {
   const [messages, setMessages] = useState([]);
   const [messageInput, setMessageInput] = useState('');
+  const messagesEndRef = useRef(null);
 
   const [user, setUser] = useState({ id: "", name: "", avatar: "", score: 0 });
 
@@ -13,12 +15,13 @@ function ChatApp() {
     socket.on('chat-message', (msg) => {
       setMessages((prev) => [...prev, msg]);
     });
+     
 
 
     const handlePlayerInfo = (player) => {
       console.log("👤 Player info received:", player);
       setUser(player);
-      console.log("👤 Player info received:", user);
+      
 
     };
     socket.emit('request-player-info');
@@ -36,21 +39,38 @@ function ChatApp() {
     };
   }, []);
 
+
+  useEffect(() => {
+  if (messagesEndRef.current) {
+    messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+  }
+}, [messages]);
+
+
+  
   const sendMessage = (e) => {
-    e.preventDefault();
-    if (messageInput.trim()) {
-      socket.emit('chat-message', messageInput);
-      setMessageInput('');
-    }
-  };
+  e.preventDefault();
+  if (messageInput.trim()) {
+    const messagePayload = {
+      avatar: user.avatar,
+      text: messageInput,
+    };
+    socket.emit('chat-message', messagePayload);
+    setMessageInput('');
+  }
+};
 
   return (
     <div style={{ padding: '10px', height: '70%', display: 'flex', flexDirection: 'column' }}>
       <div style={{ flex: 1, overflowY: 'auto', border: '1px solid #ccc', padding: '8px', background: '#f9f9f9' }}>
-        {messages.map((msg, index) => (
-          <div key={index} style={{ marginBottom: '4px' }}>{msg}</div>
-        ))}
-      </div>
+  {messages.map((msg, index) => (
+    <div key={index} style={{ marginBottom: '4px' }}>
+      {msg.avatar} {msg.text}
+    </div>
+
+  ))}
+  <div ref={messagesEndRef} />
+</div>
       <form onSubmit={sendMessage} style={{ display: 'flex', marginTop: '8px' }}>
         <input
           value={messageInput}
