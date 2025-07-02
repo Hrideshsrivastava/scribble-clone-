@@ -4,53 +4,65 @@ import socket from './Socket';
 import ScribbleGame from './scribble';
 import Testy from './test';
 import Scoreboard from './Scoreboard';
-
-
-
-
-
+import Timer from './Timer';
 
 
 function App() {
   
   const [user, setUser] = useState({ id: "", name: "", avatar: "", score: 0 });
   const [host, setHost] = useState(false);
+  const [clockRunning, setClockRunning] = useState(false);
+  const clockTimeoutRef = useRef(null); // to store the timeout ID for the clock
   //manage host selection 
   
 useEffect(() => {
   const handlePlayerInfo = (player) => {
     console.log("👤 Player info received:", player);
     setUser(player);
-    socket.emit('host-id'); // Ask for current host after joining
+    socket.emit('host-id');
   };
 
   const handleHostId = (hostId) => {
     console.log("👤 Host ID received:", hostId);
-
-    // Check against user.id safely using latestUserRef
     if (latestUserRef.current && hostId === latestUserRef.current.id) {
-      console.log("👑 You are now the host!");
       setHost(true);
     } else {
       setHost(false);
     }
   };
 
+  const handleStartClock = () => {
+    console.log("⏰ Clock started!");
+    setClockRunning(true);
+
+    // Hide clock after 60s
+    const timeout = setTimeout(() => {
+      setClockRunning(false);
+    }, 60000);
+
+    // Store timeout so it can be cleared later if needed
+    clockTimeoutRef.current = timeout;
+  };
+
   socket.on('player-info', handlePlayerInfo);
   socket.on('host-id', handleHostId);
-
+  socket.on('start-clock', handleStartClock);
   socket.emit('request-player-info');
 
   return () => {
     socket.off('player-info', handlePlayerInfo);
     socket.off('host-id', handleHostId);
+    socket.off('start-clock', handleStartClock);
+    clearTimeout(clockTimeoutRef.current); // cleanup on unmount
   };
 }, []);
+
 
 // Keep latest user in a ref so it's always fresh inside event handlers
 const latestUserRef = useRef(user);
 useEffect(() => {
   latestUserRef.current = user;
+
 }, [user]);
 
   //variable to manage the selected game
@@ -85,7 +97,7 @@ useEffect(() => {
         Scribble
       </button>
       <button
-        onClick={() => setSelectedGame('Testy')}
+        onClick={() => socket.emit('sribble-started')}
        // className={selectedGame === 'Testy' ? 'active' : ''}
       >
         start game
@@ -100,6 +112,13 @@ useEffect(() => {
       <div className="content-area">
         <div className="chat-pane">
           {/* scoreboard */}
+          {clockRunning &&  <Timer initialSeconds={60}
+ onComplete={() => {
+    console.log("⏰ Time's up!");
+    
+  }}
+/>}
+         
           <Scoreboard />
           {/* Chat Application */}
           

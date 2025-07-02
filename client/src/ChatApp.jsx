@@ -9,12 +9,19 @@ function ChatApp() {
   const messagesEndRef = useRef(null);
 
   const [user, setUser] = useState({ id: "", name: "", avatar: "", score: 0 });
-
+  const[correctWord, setCorrectWord] = useState("");
 
   useEffect(() => {
     socket.on('chat-message', (msg) => {
       setMessages((prev) => [...prev, msg]);
     });
+    //store the cirrect word locally
+    // this will be used to check if the user has guessed the word correctly
+    const handleCorrectWord = (word) => {
+      console.log("📝 Correct word received:", word);
+      setCorrectWord(word);
+    };
+    socket.on('correct-word', handleCorrectWord);
      
 
 
@@ -63,14 +70,26 @@ function ChatApp() {
   return (
     <div style={{ padding: '10px', height: '70%', display: 'flex', flexDirection: 'column' }}>
       <div style={{ flex: 1, overflowY: 'auto', border: '1px solid #ccc', padding: '8px', background: '#f9f9f9' }}>
-  {messages.map((msg, index) => (
-    <div key={index} style={{ marginBottom: '4px' }}>
-      {msg.avatar} {msg.text}
-    </div>
+        {messages.map((msg, index) => {
+      let color = '#000'; // default text color
 
-  ))}
-  <div ref={messagesEndRef} />
-</div>
+      // 🌈 Customize colors based on your logic
+      if (msg.text === correctWord) {
+        color = 'green';
+      }
+
+       else if (msg.senderId === socket.id) {
+        color = 'red'; // your own messages
+      }
+
+      return (
+        <div key={index} style={{ marginBottom: '4px', color }}>
+          {msg.avatar} {msg.text}
+        </div>
+      );
+    })}
+        <div ref={messagesEndRef} />
+      </div>
       <form onSubmit={sendMessage} style={{ display: 'flex', marginTop: '8px' }}>
         <input
           value={messageInput}

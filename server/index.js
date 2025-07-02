@@ -3,6 +3,11 @@ import http from 'http';
 import cors from 'cors';
 import { Server } from 'socket.io';
 
+import {
+  getPlayers, addPlayer, removePlayer, getHostId,
+  startGame, handleGuess
+} from './gameManager.js';
+
 const app = express();
 const server = http.createServer(app);
 
@@ -30,6 +35,7 @@ io.on('connection', (socket) => {
     if (username && password) {
        const player = { id: socket.id, name: username,avatar:password, score: 0 };
       players.push(player);
+      addPlayer(player)
       console.log('Players:', players);
       process.stdout.write(''); 
 
@@ -75,6 +81,7 @@ io.on('connection', (socket) => {
   // 💬 Chat handler
   
   socket.on('chat-message', (data) => {
+    handleGuess(socket, io, data.text)
   io.emit('chat-message', data); // Just forward the object
 });
 
@@ -86,6 +93,7 @@ io.on('connection', (socket) => {
   // ❌ Handle disconnect
   socket.on('disconnect', () => {
     console.log(`❌ User disconnected: ${socket.id}`);
+    removePlayer(socket.id)
     players = players.filter((p) => p.id !== socket.id);
     io.emit('player-list', players);
     
@@ -96,6 +104,10 @@ io.on('connection', (socket) => {
   socket.on('clear-canvas', () => {
     socket.broadcast.emit('clear-canvas'); // Notify others to clear their canvas
   });
+
+  socket.on('sribble-started', () =>{
+    startGame(io);
+  })
 
 
   

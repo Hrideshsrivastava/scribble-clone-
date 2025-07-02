@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import socket from './Socket';
+import { use } from 'react';
 
 function ScribbleGame() {
   const canvasRef = useRef(null);
@@ -8,6 +9,18 @@ function ScribbleGame() {
   const [thickness, setThickness] = useState(2); // default brush size
   const [isEraser, setIsEraser] = useState(false); // pen or eraser mode
 
+  const [word, setWord] = useState('');
+  const handleword = (data) => {
+    setWord(data);
+    console.log('Received word:', data);
+  };
+
+
+  useEffect(() => {
+
+    socket.on('your-word', handleword );
+
+  }, []);
 
 
   useEffect(() => {
@@ -107,7 +120,7 @@ function ScribbleGame() {
   };
 
   return (
-    <div
+    <div 
   style={{
     height: '90vh',
     display: 'flex',
@@ -120,7 +133,27 @@ function ScribbleGame() {
     overflow: 'hidden',
   }}
 >
-  
+  <div
+    style={{
+      flexGrow: 1,
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      maxHeight: '70vh',
+      maxWidth: '70vw',
+    }}
+    className='canvas-container'
+  >
+    
+    <canvas
+         ref={canvasRef}
+         onMouseDown={startDrawing}
+         onMouseMove={draw}
+         onMouseUp={stopDrawing}
+         onMouseLeave={stopDrawing}
+         style={{ border: '2px solid #000', backgroundColor: '#fff' }}
+      />
+  </div>
 
   {/* Toolbar */}
   <div
@@ -170,47 +203,8 @@ function ScribbleGame() {
     >
       {isEraser ? 'Switch to Pen' : 'Switch to Eraser'}
     </button>
-  </div>
 
-  {/* Canvas Wrapper */}
-  <div
-    style={{
-      flexGrow: 1,
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      maxHeight: '70vh',
-    }}
-  >
-    {/* <canvas
-      ref={canvasRef}
-      onMouseDown={startDrawing}
-      onMouseMove={draw}
-      onMouseUp={stopDrawing}
-      onMouseLeave={stopDrawing}
-      width={window.innerWidth * 0.8}
-      height={window.innerHeight * 0.6}
-      style={{
-        border: '2px solid #000',
-        backgroundColor: '#fff',
-        maxWidth: '100%',
-        height: '100%',
-        maxHeight: '100%',
-        cursor: 'crosshair',
-      }}
-    /> */}
-    <canvas
-         ref={canvasRef}
-         onMouseDown={startDrawing}
-         onMouseMove={draw}
-         onMouseUp={stopDrawing}
-         onMouseLeave={stopDrawing}
-         style={{ border: '2px solid #000', backgroundColor: '#fff' }}
-      />
-  </div>
-
-  {/* Clear Button */}
-  <button
+    <button
     onClick={clearCanvas}
     style={{
       marginTop: '10px',
@@ -226,6 +220,8 @@ function ScribbleGame() {
   >
     Clear
   </button>
+  </div>
+  
 </div>
 
   );
