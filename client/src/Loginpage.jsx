@@ -26,6 +26,7 @@ function Loginpage({ setCurrentComponent }) {
       socket.emit('request-player-info'); // ✅ safe to do now
       socket.emit('request-player-list'); // Optional: refresh list too
       setCurrentComponent("App");
+      
     });
 
     socket.on("login-error", (msg) => {
@@ -73,7 +74,7 @@ function Loginpage({ setCurrentComponent }) {
         />
         <input
           type="text"
-          placeholder="avatar"
+          placeholder="🪟 + ."
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />

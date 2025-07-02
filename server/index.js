@@ -68,7 +68,9 @@ io.on('connection', (socket) => {
   console.warn(`⚠️ Player not found for socket ${socket.id}`);
   socket.emit('player-info', { error: "Player not found" });
   }})
-  
+  socket.on('host-id', ( )=>{
+    socket.emit('host-id', players[0].id); // Send the host ID to the client
+  });
 
   // 💬 Chat handler
   
@@ -86,11 +88,17 @@ io.on('connection', (socket) => {
     console.log(`❌ User disconnected: ${socket.id}`);
     players = players.filter((p) => p.id !== socket.id);
     io.emit('player-list', players);
+    
+    io.emit('host-id', players[0].id); // Send the host ID to the client
+  
   });
 
   socket.on('clear-canvas', () => {
     socket.broadcast.emit('clear-canvas'); // Notify others to clear their canvas
   });
+
+
+  
 });
 
 server.listen(5000, () => {

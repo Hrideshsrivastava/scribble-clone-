@@ -8,7 +8,14 @@ function ScribbleGame() {
   const [thickness, setThickness] = useState(2); // default brush size
   const [isEraser, setIsEraser] = useState(false); // pen or eraser mode
 
+
+
   useEffect(() => {
+     
+     
+
+
+    
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d');
 
