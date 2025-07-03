@@ -9,7 +9,8 @@ function ScribbleGame() {
   const [color, setColor] = useState('#000000'); // default pen color
   const [thickness, setThickness] = useState(2); // default brush size
   const [isEraser, setIsEraser] = useState(false); // pen or eraser mode
-
+  // State to hold the word received from the server
+  // This will be used to display the word to the drawer
   const [word, setWord] = useState('');
   const handleword = (data) => {
     setWord(data);
@@ -23,7 +24,23 @@ function ScribbleGame() {
 
   }, []);
 
+  // Check if the current user is the drawer
+  // This will be used to enable/disable drawing features
+const [isDrawer, setIsDrawer] = useState(false);
 
+useEffect(() => {
+  socket.on('current-drawer', (drawerId) => {
+    setIsDrawer(drawerId === socket.id); // true if you are the drawer
+  });
+
+  return () => {
+    socket.off('current-drawer');
+  };
+}, []);
+
+
+// Initialize the canvas and set up event listeners
+  // This will handle drawing on the canvas and syncing with other users
   useEffect(() => {
      
      
@@ -66,6 +83,7 @@ function ScribbleGame() {
   }, []);
 
   const startDrawing = (e) => {
+    if (!isDrawer) return; // ⛔ Block non-drawers
     const { offsetX, offsetY } = e.nativeEvent;
     const ctx = canvasRef.current.getContext('2d');
 
@@ -86,6 +104,7 @@ function ScribbleGame() {
   };
 
   const draw = (e) => {
+    if (!isDrawer) return;
     if (!isDrawing) return;
     const { offsetX, offsetY } = e.nativeEvent;
     const ctx = canvasRef.current.getContext('2d');

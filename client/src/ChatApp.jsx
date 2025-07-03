@@ -12,6 +12,10 @@ function ChatApp() {
   const[correctWord, setCorrectWord] = useState("");
 
   useEffect(() => {
+
+    socket.on('guess-acknowledged', (msg) => {
+  setMessages((prev) => [...prev, msg]);
+});
     socket.on('chat-message', (msg) => {
       setMessages((prev) => [...prev, msg]);
     });
@@ -59,9 +63,11 @@ function ChatApp() {
   e.preventDefault();
   if (messageInput.trim()) {
     const messagePayload = {
-      avatar: user.avatar,
-      text: messageInput,
-    };
+  avatar: user.avatar,
+  text: messageInput,
+  senderId: socket.id, // ✅ add this
+};
+
     socket.emit('chat-message', messagePayload);
     setMessageInput('');
   }
@@ -71,24 +77,34 @@ function ChatApp() {
     <div style={{ padding: '10px', height: '70%', display: 'flex', flexDirection: 'column' }}>
       <div style={{ flex: 1, overflowY: 'auto', border: '1px solid #ccc', padding: '8px', background: '#f9f9f9' }}>
         {messages.map((msg, index) => {
-      let color = '#000'; // default text color
+  const isSystemMessage = msg.avatar === '';
+  const isCorrectGuess = msg.text === correctWord;
+  const isOwnMessage = msg.senderId === socket.id;
 
-      // 🌈 Customize colors based on your logic
-      if (msg.text === correctWord) {
-        color = 'green';
-        msg.text = '✅ correct word' ; // prepend a checkmark to the correct word
-      }
+  let color = '#000';
 
-       else if (msg.senderId === socket.id) {
-        color = 'red'; // your own messages
-      }
+  if (isSystemMessage) {
+    return (
+      <div key={index} style={{ fontStyle: 'italic', textAlign: 'center', color: '#888' }}>
+        {msg.text}
+      </div>
+    );
+  }
 
-      return (
-        <div key={index} style={{ marginBottom: '4px', color }}>
-          {msg.avatar} {msg.text}
-        </div>
-      );
-    })}
+  if (isCorrectGuess) {
+    color = 'green';
+  } else if (isOwnMessage) {
+    color = 'blue';
+  }
+
+  return (
+    <div key={index} style={{ marginBottom: '4px', color }}>
+      {msg.avatar} {isCorrectGuess ? '✅ correct word' : msg.text}
+    </div>
+  );
+})}
+
+
         <div ref={messagesEndRef} />
       </div>
       <form onSubmit={sendMessage} style={{ display: 'flex', marginTop: '8px' }}>

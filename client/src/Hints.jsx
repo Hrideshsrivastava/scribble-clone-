@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 
 const VOWELS = new Set(['a', 'e', 'i', 'o', 'u']);
 
-function Hints({ word, revealInterval = 5000 }) {
+function Hints({ word, revealInterval = 15000 }) {
   const [revealedIndices, setRevealedIndices] = useState([]);
 
   useEffect(() => {

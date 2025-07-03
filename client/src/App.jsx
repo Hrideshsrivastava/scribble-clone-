@@ -13,9 +13,42 @@ function App() {
   const [user, setUser] = useState({ id: "", name: "", avatar: "", score: 0 });
   const [host, setHost] = useState(false);
   const [clockRunning, setClockRunning] = useState(false);
+const [showTimer, setShowTimer] = useState(false);
+const clockTimeoutRef = useRef(null);
+const startClockHandledRef = useRef(false);
 
-  //manage host selection 
+
+  //clocks working system
   
+
+  useEffect(() => {
+  const handleStartClock = () => {
+  if (startClockHandledRef.current) {
+    console.log("⛔ Timer already running. Ignoring duplicate.");
+    return;
+  }
+
+  console.log("⏰ Start clock received");
+  startClockHandledRef.current = true;
+
+  setShowTimer(false);
+  setClockRunning(false);
+
+  clockTimeoutRef.current = setTimeout(() => {
+    setShowTimer(true);
+    setClockRunning(true);
+  }, 5000); // show timer after 5s
+};
+
+
+  socket.on('start-clock', handleStartClock);
+
+  return () => {
+    socket.off('start-clock', handleStartClock);
+    clearTimeout(clockTimeoutRef.current);
+  };
+}, []);
+
 
 // Keep track of the latest user in a ref and host information  
 useEffect(() => {
@@ -34,24 +67,17 @@ useEffect(() => {
     }
   };
 
-  const handleStartClock = () => {
-    console.log("⏰ Clock started!");
-    setClockRunning(true);
-
-   
-
-    
-  };
+  
 
   socket.on('player-info', handlePlayerInfo);
   socket.on('host-id', handleHostId);
-  socket.on('start-clock', handleStartClock);
+ 
   socket.emit('request-player-info');
 
   return () => {
     socket.off('player-info', handlePlayerInfo);
     socket.off('host-id', handleHostId);
-    socket.off('start-clock', handleStartClock);
+    
     // cleanup on unmount
   };
 }, []);
@@ -143,12 +169,19 @@ useEffect(() => {
       <div className="content-area">
         <div className="chat-pane">
           {/* scoreboard */}
-          {clockRunning &&  <Timer initialSeconds={60}
-              onComplete={() => {
-              console.log("⏰ Time's up!");
-    
-              setClockRunning(false);}}
-/>}
+          {showTimer && clockRunning && (
+  <Timer
+  initialSeconds={60}
+  onComplete={() => {
+    console.log("⏳ Timer complete!");
+    setClockRunning(false);
+    setShowTimer(false);
+    startClockHandledRef.current = false; // ✅ reset lock for next round
+  }}
+/>
+
+)}
+
          
           <Scoreboard />
           {/* Chat Application */}
