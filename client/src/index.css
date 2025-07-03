@@ -920,3 +920,13 @@ button {
             visibility: visible;
             opacity: 1;
         }
+
+
+        .game-content-area {
+  background-image: url('/paper5.jpg'); 
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  padding: 10px;
+  border-radius: 12px;
+}
