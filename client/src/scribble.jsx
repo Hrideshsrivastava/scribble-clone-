@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import socket from './Socket';
 import { use } from 'react';
+import './index.css';
 
 function ScribbleGame() {
   const canvasRef = useRef(null);
