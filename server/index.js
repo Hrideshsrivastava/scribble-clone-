@@ -13,7 +13,7 @@ const server = http.createServer(app);
 
 const io = new Server(server, {
   cors: {
-    origin: "https://scribble-clone-8l9k.vercel.app/",
+    origin: "https://scribble-clone-8l9k.vercel.app",
     methods: ["GET", "POST"],
     
   },
