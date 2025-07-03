@@ -76,6 +76,7 @@ function ChatApp() {
       // 🌈 Customize colors based on your logic
       if (msg.text === correctWord) {
         color = 'green';
+        msg.text = '✅ correct word' ; // prepend a checkmark to the correct word
       }
 
        else if (msg.senderId === socket.id) {

@@ -96,8 +96,10 @@ io.on('connection', (socket) => {
     removePlayer(socket.id)
     players = players.filter((p) => p.id !== socket.id);
     io.emit('player-list', players);
+    if(players.length > 0) {
+      io.emit('host-id', players[0].id);
+    }
     
-    io.emit('host-id', players[0].id); // Send the host ID to the client
   
   });
 
@@ -105,9 +107,11 @@ io.on('connection', (socket) => {
     socket.broadcast.emit('clear-canvas'); // Notify others to clear their canvas
   });
 
-  socket.on('sribble-started', () =>{
-    startGame(io);
-  })
+  //starts the game
+  socket.on('sribble-started', () => {
+  startGame(io); // ✅ Clean now
+});
+
 
 
   

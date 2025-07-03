@@ -5,6 +5,7 @@ import ScribbleGame from './scribble';
 import Testy from './test';
 import Scoreboard from './Scoreboard';
 import Timer from './Timer';
+import Hints from './Hints';
 
 
 function App() {
@@ -12,9 +13,11 @@ function App() {
   const [user, setUser] = useState({ id: "", name: "", avatar: "", score: 0 });
   const [host, setHost] = useState(false);
   const [clockRunning, setClockRunning] = useState(false);
-  const clockTimeoutRef = useRef(null); // to store the timeout ID for the clock
+
   //manage host selection 
   
+
+// Keep track of the latest user in a ref and host information  
 useEffect(() => {
   const handlePlayerInfo = (player) => {
     console.log("👤 Player info received:", player);
@@ -35,13 +38,9 @@ useEffect(() => {
     console.log("⏰ Clock started!");
     setClockRunning(true);
 
-    // Hide clock after 60s
-    const timeout = setTimeout(() => {
-      setClockRunning(false);
-    }, 60000);
+   
 
-    // Store timeout so it can be cleared later if needed
-    clockTimeoutRef.current = timeout;
+    
   };
 
   socket.on('player-info', handlePlayerInfo);
@@ -53,7 +52,36 @@ useEffect(() => {
     socket.off('player-info', handlePlayerInfo);
     socket.off('host-id', handleHostId);
     socket.off('start-clock', handleStartClock);
-    clearTimeout(clockTimeoutRef.current); // cleanup on unmount
+    // cleanup on unmount
+  };
+}, []);
+
+//keep track of the latest word in a ref so it's always fresh inside event handlers
+const [latestWord, setLatestWord] = useState('');
+
+
+ 
+
+// Keep track of the current drawer in a ref so it's always fresh inside event handlers
+    const [currentDrawerId, setCurrentDrawerId] = useState('');
+
+  useEffect(() => {
+  const handleDrawer = (id) => {
+    console.log('🧑‍🎨 New drawer:', id);
+    setCurrentDrawerId(id);
+  };
+
+  const handleWord = (word) => {
+    console.log('📦 Word received:', word);
+    setLatestWord(word);
+  };
+
+  socket.on('current-drawer', handleDrawer);
+  socket.on('correct-word', handleWord);
+
+  return () => {
+    socket.off('current-drawer', handleDrawer);
+    socket.off('correct-word', handleWord);
   };
 }, []);
 
@@ -61,6 +89,8 @@ useEffect(() => {
 // Keep latest user in a ref so it's always fresh inside event handlers
 const latestUserRef = useRef(user);
 useEffect(() => {
+
+
   latestUserRef.current = user;
 
 }, [user]);
@@ -88,14 +118,17 @@ useEffect(() => {
       {/* Top Navbar */}
       
       <nav className="game-navbar">
-  {host ? (
+
+      {currentDrawerId === user.id ? (
+  <h3>Your word: {latestWord}</h3>
+) : (
+  <Hints word={latestWord} />
+)}
+
+    {host && (
     <>
-      <button
-        onClick={() => setSelectedGame('Scribble')}
-        //className={selectedGame === 'Scribble' ? 'active' : ''}
-      >
-        Scribble
-      </button>
+      
+       
       <button
         onClick={() => socket.emit('sribble-started')}
        // className={selectedGame === 'Testy' ? 'active' : ''}
@@ -103,8 +136,6 @@ useEffect(() => {
         start game
       </button>
     </>
-  ) : (
-    <span className="waiting-msg">Waiting for host to select a game...</span>
   )}
 </nav>
 
@@ -113,10 +144,10 @@ useEffect(() => {
         <div className="chat-pane">
           {/* scoreboard */}
           {clockRunning &&  <Timer initialSeconds={60}
- onComplete={() => {
-    console.log("⏰ Time's up!");
+              onComplete={() => {
+              console.log("⏰ Time's up!");
     
-  }}
+              setClockRunning(false);}}
 />}
          
           <Scoreboard />
