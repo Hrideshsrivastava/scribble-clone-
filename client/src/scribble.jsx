@@ -176,7 +176,7 @@ useEffect(() => {
          onMouseMove={draw}
          onMouseUp={stopDrawing}
          onMouseLeave={stopDrawing}
-         style={{ border: '2px solid #000', backgroundColor: '#fff' ,height:'90%'}}
+         style={{ border: '2px solid #000', backgroundColor: '#fff' ,height:'100%'}}
       />
   </div>
 
