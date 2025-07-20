@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState, useCallback } from 'react';
 import ChatApp from './ChatApp';
 import socket from './Socket';
 import ScribbleGame from './scribble';
-import Testy from './test';
+
 import Scoreboard from './Scoreboard';
 import Timer from './Timer';
 import Hints from './Hints';
@@ -129,8 +129,7 @@ useEffect(() => {
         return <ScribbleGame />;
 
 
-      case 'Testy':
-        return <Testy />;  
+        
 
       default:
         return <ScribbleGame />;
@@ -141,7 +140,7 @@ useEffect(() => {
     <div className="app-container" style ={{width: '100vw'}}> 
       {/* Top Navbar */}
       
-      <nav className="game-navbar">
+      <nav className="game-navbar" style={{height:"5vh"}}>
 
       {currentDrawerId === user.id ? (
       <h3>Your word: {latestWord}</h3>
@@ -157,7 +156,7 @@ useEffect(() => {
           clickSound.play();
 
         }}
-       // className={selectedGame === 'Testy' ? 'active' : ''}
+       
       >
         start game
       </button>

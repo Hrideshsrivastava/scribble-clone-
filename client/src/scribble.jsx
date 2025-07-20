@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import socket from './Socket';
 import { use } from 'react';
 import './index.css';
+import './toolbar.css'
 
 function ScribbleGame() {
   const clickSound = new Audio('./mouse-click.mp3');
@@ -164,6 +165,7 @@ useEffect(() => {
       justifyContent: 'center',
       maxHeight: '70vh',
       maxWidth: '70vw',
+      margin: '2vh '
     }}
     className='canvas-container'
   >
@@ -174,87 +176,57 @@ useEffect(() => {
          onMouseMove={draw}
          onMouseUp={stopDrawing}
          onMouseLeave={stopDrawing}
-         style={{ border: '2px solid #000', backgroundColor: '#fff' }}
+         style={{ border: '2px solid #000', backgroundColor: '#fff' ,height:'90%'}}
       />
   </div>
 
   {/* Toolbar */}
-  <div
-    style={{
-      display: 'flex',
-      justifyContent: 'center',
-      gap: '20px',
-      flexWrap: 'wrap',
-      marginTop: '15px',
-    }}
-  >
-    <label>
-      Pen Color:
-      <input
-        type="color"
-        value={color}
-        onChange={(e) => setColor(e.target.value)}
-        disabled={isEraser}
-        style={{ marginLeft: '5px', cursor: isEraser ? 'not-allowed' : 'pointer' }}
-      />
-    </label>
+  <div className="toolbar-container">
+        <label className="toolbar-control">
+          Pen Color:
+          <input
+            type="color"
+            value={color}
+            onChange={(e) => setColor(e.target.value)}
+            disabled={isEraser}
+            className="toolbar-color-picker"
+          />
+        </label>
 
-    <label style={{ display: 'flex', alignItems: 'center' ,height: '4vh'}}>
-      Brush Size:
-      <input
-        type="range"
-        min="1"
-        max="20"
-        value={thickness}
-        onChange={(e) => setThickness(Number(e.target.value))}
-        style={{ marginLeft: '10px' ,height: '4vh'}}
-      />
-      <span style={{ marginLeft: '5px' }}>{thickness}px</span>
-    </label>
+        <label className="toolbar-control">
+          Brush Size:
+          <input
+            type="range"
+            min="1"
+            max="20"
+            value={thickness}
+            onChange={(e) => setThickness(Number(e.target.value))}
+            className="toolbar-slider"
+          />
+          <span className="toolbar-thickness-value">{thickness}px</span>
+        </label>
 
-    <button
-      onClick={() =>{ 
-        setIsEraser(!isEraser);
-        clickSound.play();
+        <button
+          onClick={() => { 
+            setIsEraser(!isEraser);
+            clickSound.play();
+          }}
+          className={`toolbar-button ${isEraser ? 'button-pen' : 'button-eraser'}`}
+        >
+          {isEraser ? 'Switch to Pen' : 'Switch to Eraser'}
+        </button>
 
-
-      }}
-      style={{
-        backgroundColor: isEraser ? '#4caf50' : '#f44336',
-        color: 'white',
-        border: 'none',
-        padding: '6px 12px',
-        borderRadius: '6px',
-        cursor: 'pointer',
-        height: '4vh',
-      }}
-    >
-      {isEraser ? 'Switch to Pen' : 'Switch to Eraser'}
-    </button>
-
-    <button
-    onClick={()=>{
-      clearCanvas();
-      clickSound.play();
-
-    }}
-    style={{
-      marginTop: '10px',
-      padding: '8px 16px',
-      backgroundColor: '#ff9800',
-      color: '#fff',
-      border: 'none',
-      borderRadius: '8px',
-      cursor: 'pointer',
-      height: '4vh'
-
-    }}
-  >
-    Clear
-  </button>
-  </div>
-  
-</div>
+        <button
+          onClick={() => {
+            clearCanvas();
+            clickSound.play();
+          }}
+          className="toolbar-button button-clear"
+        >
+          Clear
+        </button>
+      </div>
+      </div>
 
   );
 }

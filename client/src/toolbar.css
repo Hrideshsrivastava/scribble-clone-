@@ -1,0 +1,132 @@
+
+/* Main container for the toolbar */
+.toolbar-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-top: 15px;
+  padding: 12px;
+  background-color: #f8f9fa;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid #dee2e6;
+}
+
+/* Base style for each control group (label + input) */
+.toolbar-control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #495057;
+}
+
+/* Style for the color picker input */
+.toolbar-color-picker {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  overflow: hidden; /* Ensures the color fills the circle */
+}
+
+.toolbar-color-picker::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+.toolbar-color-picker::-webkit-color-swatch {
+  border: 2px solid #fff;
+  border-radius: 50%;
+  box-shadow: 0 0 0 1px #ced4da;
+}
+
+.toolbar-color-picker:hover {
+  transform: scale(1.1);
+}
+
+.toolbar-color-picker:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+/* Style for the range slider (brush size) */
+.toolbar-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 120px;
+  height: 8px;
+  background: #dee2e6;
+  border-radius: 5px;
+  outline: none;
+  transition: opacity 0.2s;
+}
+
+.toolbar-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  background: #0d6efd;
+  cursor: pointer;
+  border-radius: 50%;
+  border: 2px solid #fff;
+}
+
+.toolbar-slider::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  background: #0d6efd;
+  cursor: pointer;
+  border-radius: 50%;
+  border: 2px solid #fff;
+}
+
+.toolbar-thickness-value {
+  font-weight: 600;
+  min-width: 25px; /* Prevents layout shift */
+  text-align: left;
+}
+
+/* Base style for all toolbar buttons */
+.toolbar-button {
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  color: white;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.toolbar-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.toolbar-button:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+/* Specific colors for buttons */
+.button-eraser {
+  background-color: #dc3545; /* Red */
+}
+.button-pen {
+  background-color: #198754; /* Green */
+}
+.button-clear {
+  background-color: #ffc107; /* Yellow */
+  color: #212529;
+}

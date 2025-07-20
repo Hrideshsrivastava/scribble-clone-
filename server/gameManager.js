@@ -28,7 +28,19 @@ export function addPlayer(player) {
 
 export function removePlayer(id) {
   players = players.filter(p => p.id !== id);
-  if (currentDrawerIndex >= players.length) currentDrawerIndex = 0;
+
+  if (players.length === 0) {
+    gameStarted = false;
+    currentDrawerIndex = 0;
+    currentWord = '';
+    clearTimeout(roundTimeout);  // 🧹 Cancel leftover timer
+    roundTimeout = null;
+    return;
+  }
+
+  if (currentDrawerIndex >= players.length) {
+    currentDrawerIndex = 0;
+  }
 }
 
 export function getHostId() {
@@ -37,28 +49,43 @@ export function getHostId() {
 
 export function startGame(io) {
   if (players.length < 2) return;
+
+  // Avoid duplicate timers
+  if (!gameStarted) {
+  currentDrawerIndex = 0;
+}
+  if (roundTimeout) {
+    clearTimeout(roundTimeout);
+    roundTimeout = null;
+  }
+
+  if (currentDrawerIndex >= players.length) {
+    currentDrawerIndex = 0;
+  }
+
+  const drawer = players[currentDrawerIndex];
+  if (!drawer) {
+    console.warn("No drawer found. Aborting startGame.");
+    return;
+  }
+
   setGameCondition(1);
 
   setTimeout(() => io.emit('start-clock'), 5000);
 
- roundTimeout =setTimeout(() =>{ 
-    io.emit('stop-clock');  
-    nextTurn(io)
-     }, 65000);
-  
+  roundTimeout = setTimeout(() => {
+    io.emit('stop-clock');
+    nextTurn(io);
+  }, 65000);
+
   maxpoints = players.length * 10;
   gameStarted = true;
   currentWord = getRandomWord();
   scoredThisRound.clear();
 
-  const drawer = players[currentDrawerIndex];
- 
-  scoredThisRound.add(drawer);
+  scoredThisRound.add(drawer.id);
 
-  // ✅ Send full word to ALL clients
   io.emit('correct-word', currentWord);
-
-  // ✅ Tell clients who the drawer is
   io.emit('current-drawer', drawer.id);
 
   io.emit('round-started', {
@@ -66,6 +93,7 @@ export function startGame(io) {
     drawerName: drawer.name,
   });
 }
+
 
 
 export function nextTurn(io) {

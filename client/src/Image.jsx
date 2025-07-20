@@ -12,8 +12,9 @@ function Image() {
      objectFit: 'contain',
       display: 'flex',
       transform: 'scale(2.2)',
-      margin:"0px 0px  0px 200px",
-      padding: '0px'
+      margin:"0px 0px  0px 100px",
+      padding: '0px',
+      zIndex:0
 
 }}
       />
