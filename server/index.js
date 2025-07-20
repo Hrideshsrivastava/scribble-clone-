@@ -13,7 +13,7 @@ const server = http.createServer(app);
 
 const io = new Server(server, {
   cors: {
-    origin: ["https://scribble-clone-six.vercel.app",
+    origin: ["https://scribble-clone-5eu5.vercel.app",
               "http://localhost:5173"
     ]
     ,
