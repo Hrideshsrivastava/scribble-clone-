@@ -4,6 +4,8 @@ import { use } from 'react';
 import './index.css';
 
 function ScribbleGame() {
+  const clickSound = new Audio('./mouse-click.mp3');
+  const cleanSound = new Audio('./swoosh.mp3');
   const canvasRef = useRef(null);
   const [isDrawing, setIsDrawing] = useState(false);
   const [color, setColor] = useState('#000000'); // default pen color
@@ -73,6 +75,7 @@ useEffect(() => {
     });
 
     socket.on('clear-canvas', () => {
+      cleanSound.play();
       ctx.clearRect(0, 0, canvas.width, canvas.height);
     });
 
@@ -210,7 +213,12 @@ useEffect(() => {
     </label>
 
     <button
-      onClick={() => setIsEraser(!isEraser)}
+      onClick={() =>{ 
+        setIsEraser(!isEraser);
+        clickSound.play();
+
+
+      }}
       style={{
         backgroundColor: isEraser ? '#4caf50' : '#f44336',
         color: 'white',
@@ -225,7 +233,11 @@ useEffect(() => {
     </button>
 
     <button
-    onClick={clearCanvas}
+    onClick={()=>{
+      clearCanvas();
+      clickSound.play();
+
+    }}
     style={{
       marginTop: '10px',
       padding: '8px 16px',

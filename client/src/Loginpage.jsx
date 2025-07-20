@@ -59,29 +59,43 @@ function Loginpage({ setCurrentComponent }) {
           padding: '20px',
           borderRadius: '10px',
           zIndex: 10,
-          width: '40vw',
+          width: '45vw',
+          height:'15vw',
           flexDirection: 'row',
           display: 'flex',
         }}
       >
-        <form onSubmit={handleLogin}>
-        <Image />
-        <input
-          type="text"
-          placeholder="Username"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-        />
-        <input
-          type="text"
-          placeholder="🪟 + ."
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
         
-        {error && <p className="error">{error}</p>}
-        <button type="submit">Login</button>
-      </form>
+        <form onSubmit={handleLogin} style={{ position: 'absolute' }}>
+
+  {/* Background GIF */}
+  <div style={{ position: 'absolute', top: 0, left: 0, zIndex: 0, width: '100%', height: '100%' }}>
+    <Image />
+  </div>
+
+  {/* Foreground Inputs */}
+  <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'row', gap: '10px', width: '200px' , top:100}}>
+    <input
+      type="text"
+      placeholder="Username"
+      value={username}
+      onChange={(e) => setUsername(e.target.value)}
+    />
+    <input
+      type="text"
+      placeholder="🪟 + ."
+      value={password}
+      onChange={(e) => setPassword(e.target.value)}
+    />
+ 
+
+  {error && <p className="error" style={{ zIndex: 1, position: 'relative' }}>{error}</p>}
+
+  <button type="submit" style={{ zIndex: 1, position: 'relative' }}>Login</button>
+   </div>
+</form>
+
+      
       </div>
     </div>
   </>

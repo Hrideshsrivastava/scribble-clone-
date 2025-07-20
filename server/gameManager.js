@@ -7,6 +7,17 @@ let gameStarted = false;
 let maxpoints = 0 // Assuming each player can score 10 points per round
 let scoredThisRound = new Set();
 
+let roundTimeout = null;  // 🔁 used to cancel the timeout
+
+
+let gameCondition = 0;
+export function setGameCondition(value) {
+  gameCondition = value;
+}
+export function getGameCondition() {
+  return gameCondition;
+}
+
 export function getPlayers() {
   return players;
 }
@@ -26,13 +37,23 @@ export function getHostId() {
 
 export function startGame(io) {
   if (players.length < 2) return;
+  setGameCondition(1);
 
+  setTimeout(() => io.emit('start-clock'), 5000);
+
+ roundTimeout =setTimeout(() =>{ 
+    io.emit('stop-clock');  
+    nextTurn(io)
+     }, 65000);
+  
   maxpoints = players.length * 10;
   gameStarted = true;
   currentWord = getRandomWord();
   scoredThisRound.clear();
 
   const drawer = players[currentDrawerIndex];
+ 
+  scoredThisRound.add(drawer);
 
   // ✅ Send full word to ALL clients
   io.emit('correct-word', currentWord);
@@ -44,16 +65,14 @@ export function startGame(io) {
     drawerId: drawer.id,
     drawerName: drawer.name,
   });
-
-  setTimeout(() => io.emit('start-clock'), 5000);
-  setTimeout(() => nextTurn(io), 65000);
 }
 
 
 export function nextTurn(io) {
   currentDrawerIndex = (currentDrawerIndex + 1) % players.length;
-  startGame(io);
+  
   io.emit('clear-canvas'); // ✅ no socket needed anymore
+  startGame(io);
 }
 
 
@@ -70,13 +89,14 @@ export function handleGuess(socket, io, guess) {
   }
 
   if (guess.toLowerCase().trim() === currentWord.toLowerCase()) {
+
     // 🔒 Has this user already scored?
     if (scoredThisRound.has(socket.id)) {
-      socket.emit('guess-acknowledged', {
-  avatar: '',
-  text: '✔️ Already scored, nice try!',
-  senderId:''
-});
+          socket.emit('guess-acknowledged', {
+          avatar: '',
+          text: '✔️ Already scored, nice try!',
+          senderId:''
+        });
 
       return;
     }
@@ -87,7 +107,9 @@ export function handleGuess(socket, io, guess) {
       players[playerIndex].score += maxpoints;
       maxpoints -= 10;
       scoredThisRound.add(socket.id); // ✅ block future scoring for this round
-    }
+      }
+
+
 
     io.emit('correct-guess', {
       playerId: socket.id,
@@ -96,5 +118,15 @@ export function handleGuess(socket, io, guess) {
     });
 
     io.emit('player-list', [...players]); // update scores
+
+    if (players.length == scoredThisRound.size){
+      clearTimeout(roundTimeout);
+      io.emit('stop-clock');
+      setGameCondition(0);
+      nextTurn(io);
+      
+
+    }
+    
   }
 }

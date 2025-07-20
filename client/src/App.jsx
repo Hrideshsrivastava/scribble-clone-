@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import ChatApp from './ChatApp';
 import socket from './Socket';
 import ScribbleGame from './scribble';
@@ -7,48 +7,69 @@ import Scoreboard from './Scoreboard';
 import Timer from './Timer';
 import Hints from './Hints';
 
-
 function App() {
-  
+  const clickSound = new Audio('./mouse-click.mp3');
   const [user, setUser] = useState({ id: "", name: "", avatar: "", score: 0 });
   const [host, setHost] = useState(false);
-  const [clockRunning, setClockRunning] = useState(false);
-const [showTimer, setShowTimer] = useState(false);
-const clockTimeoutRef = useRef(null);
-const startClockHandledRef = useRef(false);
-
-
-  //clocks working system
   
+  const [showTimer, setShowTimer] = useState(false);  
+  const clockTimeoutRef = useRef(null);
+  const startClockHandledRef = useRef(false);
 
+  const handleTimerComplete = useCallback(() => {
+  console.log("⏳ Timer complete!");
+  setShowTimer(false);
+  startClockHandledRef.current = false;
+}, []);
+
+
+  //keep track of the latest word in a ref so it's always fresh inside event handlers
+const [latestWord, setLatestWord] = useState('');
+
+// Keep track of the current drawer in a ref so it's always fresh inside event handlers
+    const [currentDrawerId, setCurrentDrawerId] = useState('');
+
+//variable to manage the selected game
+const [selectedGame, setSelectedGame] = useState('Scribble');
+//clocks working system
   useEffect(() => {
   const handleStartClock = () => {
-  if (startClockHandledRef.current) {
-    console.log("⛔ Timer already running. Ignoring duplicate.");
-    return;
-  }
+    if (startClockHandledRef.current) {
+      console.log("⛔ Timer already running. Ignoring duplicate.");
+      return;
+    }
 
-  console.log("⏰ Start clock received");
-  startClockHandledRef.current = true;
+    console.log("⏰ Start clock received");
+    startClockHandledRef.current = true;
 
-  setShowTimer(false);
-  setClockRunning(false);
+    clockTimeoutRef.current = setTimeout(() => {
+      setShowTimer(true);        // Mount the timer
+        // Actually tick the timer
+    }, 5000); // Delay before timer starts
+  };
 
-  clockTimeoutRef.current = setTimeout(() => {
-    setShowTimer(true);
-    setClockRunning(true);
-  }, 5000); // show timer after 5s
-};
+const handleStopClock = () => {
+    if (!startClockHandledRef.current) {
+      console.log("⚠️ Timer not started yet. Ignoring stop.");
+      return;
+    }
 
+    console.log("🛑 Stop clock received");
+        // Stop the ticking
+    setShowTimer(false);        // Unmount the timer UI
+    startClockHandledRef.current = false;
+    clearTimeout(clockTimeoutRef.current); // Cancel any delayed start
+  };
 
   socket.on('start-clock', handleStartClock);
+  socket.on('stop-clock', handleStopClock);
 
   return () => {
     socket.off('start-clock', handleStartClock);
+    socket.off('stop-clock', handleStopClock);
     clearTimeout(clockTimeoutRef.current);
   };
 }, []);
-
 
 // Keep track of the latest user in a ref and host information  
 useEffect(() => {
@@ -66,31 +87,14 @@ useEffect(() => {
       setHost(false);
     }
   };
-
-  
-
   socket.on('player-info', handlePlayerInfo);
   socket.on('host-id', handleHostId);
- 
   socket.emit('request-player-info');
-
   return () => {
     socket.off('player-info', handlePlayerInfo);
     socket.off('host-id', handleHostId);
-    
-    // cleanup on unmount
   };
 }, []);
-
-//keep track of the latest word in a ref so it's always fresh inside event handlers
-const [latestWord, setLatestWord] = useState('');
-
-
- 
-
-// Keep track of the current drawer in a ref so it's always fresh inside event handlers
-    const [currentDrawerId, setCurrentDrawerId] = useState('');
-
   useEffect(() => {
   const handleDrawer = (id) => {
     console.log('🧑‍🎨 New drawer:', id);
@@ -111,20 +115,14 @@ const [latestWord, setLatestWord] = useState('');
   };
 }, []);
 
-
 // Keep latest user in a ref so it's always fresh inside event handlers
 const latestUserRef = useRef(user);
 useEffect(() => {
-
-
-  latestUserRef.current = user;
+    latestUserRef.current = user;
 
 }, [user]);
 
-  //variable to manage the selected game
-  const [selectedGame, setSelectedGame] = useState('Scribble');
- 
-  // rendering function to switch between games
+ // rendering function to switch between games
   const renderGameComponent = () => {
     switch (selectedGame) {
       case 'Scribble':
@@ -146,17 +144,19 @@ useEffect(() => {
       <nav className="game-navbar">
 
       {currentDrawerId === user.id ? (
-  <h3>Your word: {latestWord}</h3>
-) : (
-  <Hints word={latestWord} />
-)}
+      <h3>Your word: {latestWord}</h3>
+      ) : (
+          <Hints word={latestWord} />
+            )}
 
     {host && (
     <>
-      
-       
       <button
-        onClick={() => socket.emit('sribble-started')}
+        onClick={() => {
+          socket.emit('sribble-started');
+          clickSound.play();
+
+        }}
        // className={selectedGame === 'Testy' ? 'active' : ''}
       >
         start game
@@ -168,28 +168,24 @@ useEffect(() => {
       {/* Main Content */}
       <div className="content-area">
         <div className="chat-pane">
+         {/*Timer*/}
+          {showTimer  && (<Timer
+                initialSeconds={60}
+                onComplete={() => {
+                console.log("⏳ Timer complete!");
+                setShowTimer(false);
+                startClockHandledRef.current = false; // ✅ reset lock for next round
+                }}/>)}
+
           {/* scoreboard */}
-          {showTimer && clockRunning && (
-  <Timer
-  initialSeconds={60}
-  onComplete={() => {
-    console.log("⏳ Timer complete!");
-    setClockRunning(false);
-    setShowTimer(false);
-    startClockHandledRef.current = false; // ✅ reset lock for next round
-  }}
-/>
-
-)}
-
-         
           <Scoreboard />
+
+
           {/* Chat Application */}
           
-          <ChatApp />
-        </div>
-
-        <main className="game-pane">
+              <ChatApp />
+          </div>
+            <main className="game-pane">
           <div className="game-content-area">
             {renderGameComponent()}
           </div>
@@ -200,3 +196,4 @@ useEffect(() => {
 }
 
 export default App;
+
