@@ -4,9 +4,19 @@ function Image() {
   return (
     <div className="image-container">
       <img
-        src="https://skribbl.io/img/logo.gif"
+        src="./logo.gif"
         alt="Skribbl Logo"
-        style={{ width: "500px", height: "50px", marginBottom: "20px" }}
+         style={{
+    width: "200px",      // adjust this value as needed
+    height: "auto",
+     objectFit: 'contain',
+      display: 'flex',
+      transform: 'scale(2.2)',
+      margin:"0px 0px  0px 100px",
+      padding: '0px',
+      zIndex:0
+
+}}
       />
     </div>
   );

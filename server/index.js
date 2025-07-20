@@ -5,7 +5,7 @@ import { Server } from 'socket.io';
 
 import {
   getPlayers, addPlayer, removePlayer, getHostId,
-  startGame, handleGuess
+  startGame, handleGuess,setGameCondition, getGameCondition
 } from './gameManager.js';
 
 const app = express();
@@ -13,7 +13,10 @@ const server = http.createServer(app);
 
 const io = new Server(server, {
   cors: {
-    origin: "https://scribble-clone-8l9k.vercel.app",
+    origin: ["https://scribble-clone-8l9k.vercel.app",
+              "http://localhost:5173"
+    ]
+    ,
     methods: ["GET", "POST"],
     
   },
@@ -70,10 +73,11 @@ io.on('connection', (socket) => {
     avatar: player.avatar,
     score: player.score
   });
-} else {
-  console.warn(`⚠️ Player not found for socket ${socket.id}`);
-  socket.emit('player-info', { error: "Player not found" });
-  }})
+      } else {
+          console.warn(`⚠️ Player not found for socket ${socket.id}`);
+          socket.emit('player-info', { error: "Player not found" });
+        }})
+
   socket.on('host-id', ( )=>{
     socket.emit('host-id', players[0].id); // Send the host ID to the client
   });
@@ -99,9 +103,11 @@ io.on('connection', (socket) => {
     if(players.length > 0) {
       io.emit('host-id', players[0].id);
     }
-    
-  
-  });
+    if (players.length == 0) {
+  setGameCondition(0); // ✅ Now works
+}
+
+    });
 
   socket.on('clear-canvas', () => {
     socket.broadcast.emit('clear-canvas'); // Notify others to clear their canvas
@@ -109,7 +115,9 @@ io.on('connection', (socket) => {
 
   //starts the game
   socket.on('sribble-started', () => {
+    if(getGameCondition()==0){
   startGame(io); // ✅ Clean now
+    }
 });
 
 

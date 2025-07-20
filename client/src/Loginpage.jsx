@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import socket from './Socket';// Backend address
+import socket from './Socket';
 import Spline from "@splinetool/react-spline";
-import AvatarPicker from "./avatarpicker";
 import Image from "./Image";
+import './Login.css'; // <-- IMPORTANT: Imports the new CSS file
 
 function Loginpage({ setCurrentComponent }) {
   const [username, setUsername] = useState("");
@@ -12,8 +12,6 @@ function Loginpage({ setCurrentComponent }) {
   const handleLogin = (e) => {
     e.preventDefault();
     if (username && password) {
-      console.log("🔗 Connecting to socket server at:", import.meta.env.VITE_SERVER);
-      console.log("🔼 Sending login", { username, password });
       socket.emit("login", { username, password });
     } else {
       setError("Please enter both username and password.");
@@ -21,72 +19,65 @@ function Loginpage({ setCurrentComponent }) {
   };
 
   useEffect(() => {
-    socket.on("login-success", () => {
+    const handleLoginSuccess = () => {
       console.log("✅ Login successful");
-      socket.emit('request-player-info'); // ✅ safe to do now
-      socket.emit('request-player-list'); // Optional: refresh list too
+      socket.emit('request-player-info');
+      socket.emit('request-player-list');
       setCurrentComponent("App");
-      
-    });
+    };
 
-    socket.on("login-error", (msg) => {
+    const handleLoginError = (msg) => {
       setError(msg);
-    });
+    };
+
+    socket.on("login-success", handleLoginSuccess);
+    socket.on("login-error", handleLoginError);
 
     return () => {
-      socket.off("login-success");
-      socket.off("login-error");
+      socket.off("login-success", handleLoginSuccess);
+      socket.off("login-error", handleLoginError);
     };
-   }, [setCurrentComponent]);
+  }, [setCurrentComponent]);
 
- 
   return (
-  <>
-    <div style={{ position: 'relative', width: '100%', height: '100vh' }}>
-      <Spline
-        scene="https://prod.spline.design/XtgcVveEegtC4K69/scene.splinecode"
-        style={{ position: 'absolute', top: 0, left: 0 }}
-      />
+    <>
+      {/* This main div centers the form on the page */}
+      <div style={{ position: 'relative', width: '100%', height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <Spline
+          scene="https://prod.spline.design/XtgcVveEegtC4K69/scene.splinecode"
+          style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
+        />
 
-      <div
-        className="login-container"
-        style={{
-          position: 'absolute',
-          top: '20%',
-          left: '50%',
-          transform: 'translate(-50%, -20%)',
-          backgroundColor: '#f1f1f1',
-          padding: '20px',
-          borderRadius: '10px',
-          zIndex: 10,
-          width: '40vw',
-          flexDirection: 'row',
-          display: 'flex',
-        }}
-      >
-        <form onSubmit={handleLogin}>
-        <Image />
-        <input
-          type="text"
-          placeholder="Username"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-        />
-        <input
-          type="text"
-          placeholder="🪟 + ."
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        
-        {error && <p className="error">{error}</p>}
-        <button type="submit">Login</button>
-      </form>
+        {/* The form now uses CSS classes instead of inline styles */}
+        <form onSubmit={handleLogin} className="login-form">
+          <Image />
+
+          <div className="form-content">
+            <input
+              type="text"
+              placeholder="Username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              className="login-input"
+            />
+            <input
+              type="text"
+              placeholder="Room Code (or Avatar 🪟 + .)"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="login-input"
+            />
+
+            {error && <p className="login-error">{error}</p>}
+
+            <button type="submit" className="login-button">
+              Let's Go!
+            </button>
+          </div>
+        </form>
       </div>
-    </div>
-  </>
-);
-
+    </>
+  );
 }
 
 export default Loginpage;
