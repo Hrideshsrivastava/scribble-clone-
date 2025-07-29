@@ -67,7 +67,7 @@ io.on('connection', (socket) => {
   socket.on('request-player-info', () => {
     const player = players.find((p) => p.id === socket.id);
     if (player) {
-  socket.emit('player-info', {
+    socket.emit('player-info', {
     id: player.id,
     name: player.name,
     avatar: player.avatar,
@@ -76,7 +76,7 @@ io.on('connection', (socket) => {
       } else {
           console.warn(`⚠️ Player not found for socket ${socket.id}`);
           socket.emit('player-info', { error: "Player not found" });
-        }})
+  }})
 
   socket.on('host-id', ( )=>{
     socket.emit('host-id', players[0].id); // Send the host ID to the client

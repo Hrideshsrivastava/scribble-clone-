@@ -1,6 +1,9 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
+
 import ChatApp from './ChatApp';
+
 import socket from './Socket';
+
 import ScribbleGame from './scribble';
 
 import Scoreboard from './Scoreboard';
@@ -95,6 +98,7 @@ useEffect(() => {
     socket.off('host-id', handleHostId);
   };
 }, []);
+
   useEffect(() => {
   const handleDrawer = (id) => {
     console.log('🧑‍🎨 New drawer:', id);
@@ -137,46 +141,49 @@ useEffect(() => {
   };
 
   return (
-    <div className="app-container" style ={{width: '100vw'}}> 
+    <div className="app-container" style ={{width: '100vw',height:'100vh'}}> 
       {/* Top Navbar */}
       
-      <nav className="game-navbar" style={{height:"5vh"}}>
+      <nav className="game-navbar">
+  {/* Left Side */}
+  <img src="/inkrushlogo.svg" alt="logo" style={{ height: '100%' }} />
 
-      {currentDrawerId === user.id ? (
-      <h3>Your word: {latestWord}</h3>
-      ) : (
-          <Hints word={latestWord} />
-            )}
+  {/* Center */}
+  {currentDrawerId === user.id ? (
+    <h3>Your word: {latestWord}</h3>
+  ) : (
+    <Hints word={latestWord} />
+  )}
 
+  {/* Right Side - Grouped for stability */}
+  <div className="navbar-right">
     {host && (
-    <>
-      <button
-        onClick={() => {
+      <button onClick={() => {
           socket.emit('sribble-started');
           clickSound.play();
-
         }}
-       
       >
         start game
       </button>
-    </>
-  )}
+    )}
+
+    {showTimer && (
+      <Timer
+        initialSeconds={60}
+        onComplete={() => {
+          console.log("⏳ Timer complete!");
+          setShowTimer(false);
+          startClockHandledRef.current = false;
+        }}
+      />
+    )}
+  </div>
 </nav>
 
       {/* Main Content */}
       <div className="content-area">
         <div className="chat-pane">
-         {/*Timer*/}
-          {showTimer  && (<Timer
-                initialSeconds={60}
-                onComplete={() => {
-                console.log("⏳ Timer complete!");
-                setShowTimer(false);
-                startClockHandledRef.current = false; // ✅ reset lock for next round
-                }}/>)}
-
-          {/* scoreboard */}
+         
           <Scoreboard />
 
 

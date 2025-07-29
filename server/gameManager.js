@@ -11,6 +11,7 @@ let roundTimeout = null;  // 🔁 used to cancel the timeout
 
 
 let gameCondition = 0;
+
 export function setGameCondition(value) {
   gameCondition = value;
 }
@@ -137,7 +138,7 @@ export function handleGuess(socket, io, guess) {
       scoredThisRound.add(socket.id); // ✅ block future scoring for this round
       }
 
-
+      
 
     io.emit('correct-guess', {
       playerId: socket.id,

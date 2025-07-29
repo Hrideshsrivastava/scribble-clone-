@@ -3,27 +3,48 @@ import socket from './Socket';
 
 function Scoreboard() {
   const [players, setPlayers] = useState([]);
-
+  const [hostId, setHostId] = useState(null);
+  const [drawerId,setDrawerId] = useState(null)
+   const correctSound = new Audio('./correct.mp3');
   useEffect(() => {
     const handlePlayerList = (updatedPlayers) => {
       console.log("📋 Updated player list received:", updatedPlayers);
       // Sort players by score in descending order
+      setHostId(updatedPlayers[0]?.id || null); // Set hostId to the first player in the list
       setPlayers(updatedPlayers.sort((a, b) => b.score - a.score));
     };
 
+    socket.on('correct-guess', ()=>{correctSound.play()})
+
     socket.on("player-list", handlePlayerList);
     socket.emit("request-player-list");
+
+
 
     return () => {
       socket.off("player-list", handlePlayerList);
     };
   }, []);
 
+  useEffect(()=>{
+
+    const handleDrawer = (drawerId) => {
+      console.log("🧑‍🎨 Current drawer ID:", drawerId);
+      setDrawerId(drawerId);
+    };
+
+    socket.on('current-drawer', handleDrawer);
+
+    return () => {
+      socket.off('current-drawer', handleDrawer);
+    };
+  })
+
   // --- Style Objects for Cleaner JSX ---
 
   const scoreboardContainerStyle = {
     padding: '10px',
-    height: '30%',
+    height: '25vh',
     display: 'flex',
     flexDirection: 'column',
     fontFamily: 'Arial, sans-serif',
@@ -57,13 +78,13 @@ function Scoreboard() {
     gap: '12px',
   };
 
-  const listItemStyle = (index) => ({
+  const listItemStyle = (index,player_id) => ({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
-    padding: '10px 15px',
+    padding: '0px 15px',
     borderRadius: '8px',
-    backgroundColor: index % 2 === 0 ? '#fff' : '#f1f3f5',
+    backgroundColor: player_id === hostId ?  '#dfd32aff':'#fff',
     boxShadow: '0 1px 3px rgba(0, 0, 0, 0.08)',
     transition: 'transform 0.2s ease, box-shadow 0.2s ease',
   });
@@ -98,7 +119,7 @@ function Scoreboard() {
           {players.map((player, index) => (
             <li 
               key={player.id} 
-              style={listItemStyle(index)}
+              style={listItemStyle(index,player.id)}
               onMouseOver={(e) => {
                 e.currentTarget.style.transform = 'scale(1.03)';
                 e.currentTarget.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.1)';
@@ -110,6 +131,8 @@ function Scoreboard() {
             >
               <div style={playerInfoStyle}>
                 <span style={avatarStyle}>{player.avatar}</span>
+                {hostId === player.id && <span style={{ color: 'gold' }}>👑</span>}
+                {drawerId === player.id && <span style={{ color: 'gold' }}>🖌️</span>}
                 <span>{player.name}</span>
               </div>
               <span style={scoreStyle}>{player.score}</span>
