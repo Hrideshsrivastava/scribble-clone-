@@ -27,8 +27,7 @@ let players = []; // Store players as { id, name, score }
 
 io.on('connection', (socket) => {
   console.log(`✅ User connected: ${socket.id}`);
-  socket.onAny((event, ...args) => {
-  console.log(`📡 Event received: ${event}`, args);
+  
 });
 
 
