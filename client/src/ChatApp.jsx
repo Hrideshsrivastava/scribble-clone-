@@ -63,7 +63,8 @@ function ChatApp() {
   // --- Style Objects for Cleaner JSX ---
 
   const chatContainerStyle = {
-    height: '70%',
+    flex: 1, // ✅ Takes up the remaining flexible space
+    minHeight: 0, // ✅ Prevents flexbox overflow issues
     display: 'flex',
     flexDirection: 'column',
     fontFamily: 'Arial, sans-serif',

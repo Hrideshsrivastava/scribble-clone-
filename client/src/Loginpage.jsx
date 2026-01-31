@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import socket from './Socket';
 import Spline from "@splinetool/react-spline";
 import Image from "./Image";
-import './Login.css'; // <-- IMPORTANT: Imports the new CSS file
+import './login.css'; // <-- IMPORTANT: Imports the new CSS file
 
 function Loginpage({ setCurrentComponent }) {
   const [username, setUsername] = useState("");

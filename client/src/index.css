@@ -1,932 +1,405 @@
-/* index.css */
+/* ============================================= */
+/* 1. Variables & Keyframes             */
+/* ============================================= */
 
-/* Comprehensive reset for HTML and body to ensure full viewport usage and no default margins/padding */
+:root {
+  --color-primary: #5dade2;
+  --color-secondary: #ff8fab;
+  --color-accent: #a5dff9;
+  --color-text: #5a5a5a;
+  --color-bg: #fff9f9;
+  --color-panel: #fffefc;
+  --color-border: #ffd6e7;
+  --color-dark-bg: #2d2d2d;
+  --color-dark-panel: #3a3a3a;
+  --color-dark-text: #f0f0f0;
+  --color-dark-border: #555;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes wiggle {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(5deg); }
+  75% { transform: rotate(-5deg); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+/* ============================================= */
+/* 2. Global Styles                 */
+/* ============================================= */
+
 html, body {
   margin: 0;
   padding: 0;
-  height: 100%; /* Ensure html and body take full viewport height */
-  width: 100%;  /* Ensure html and body take full viewport width */
-  overflow: hidden; /* Prevent body scroll to allow inner flex container to manage overflow */
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
 }
 
-/* Set a default font for the entire application and a general background/text color */
 body {
   font-family: 'Inter', sans-serif;
-  box-sizing: border-box; /* Include padding and border in the element's total width and height */
-  background-color: #e2e8f0; /* A light gray background for the overall page */
-  color: #333; /* Default dark text color */
+  box-sizing: border-box;
+  background-color: var(--color-bg);
+  color: #333;
+  transition: background-color 0.3s ease;
 }
 
-/* Ensure the root div takes full screen height and width, and uses flexbox for the main layout */
+body.dark-mode {
+  background-color: var(--color-dark-bg);
+  color: var(--color-dark-text);
+}
+
 #root {
   height: 100vh;
   width: 100vw;
-  display: flex; /* Using flexbox for the main layout from App.jsx */
+  display: flex;
 }
 
-/* General button styles and enhancements */
-button {
-  cursor: pointer;
-  outline: none; /* Remove outline on focus for a cleaner look */
-  transition: all 0.2s ease-in-out; /* Add a smooth transition for hover/focus effects */
-  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1); /* Apply a subtle shadow for depth */
-  border: none; /* Remove default button border */
-  border-radius: 8px; /* Slightly rounded corners */
-  padding: 10px 15px; /* Comfortable padding */
-  font-size: 16px;
-  font-weight: 500;
-}
-
-/* Custom scrollbar styles for a more refined look in scrollable areas */
+/* Custom Scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
 }
-
 ::-webkit-scrollbar-track {
   background: #f1f1f1;
   border-radius: 10px;
 }
-
 ::-webkit-scrollbar-thumb {
   background: #888;
   border-radius: 10px;
 }
-
 ::-webkit-scrollbar-thumb:hover {
   background: #555;
 }
 
-/* Specific styles for the chat application (ChatApp) and main layout
-  These correspond to the Tailwind classes previously used in ChatApp.jsx and App.jsx
-*/
 
-/* Main App Layout */
-.app-container { /* Corresponds to 'flex h-screen bg-gray-200 font-inter' */
+/* ============================================= */
+/* 3. Main App Layout                */
+/* ============================================= */
+
+.app-container {
   display: flex;
-  flex-direction: column; /* Changed to column to place navbar on top */
+  flex-direction: column;
   height: 100vh;
-  background-color: #e2e8f0; /* bg-gray-200 equivalent */
+  background-color: #e2e8f0;
   font-family: 'Inter', sans-serif;
 }
 
-/* Content Area (below Navbar) - This will hold chat and game pane */
 .content-area {
-    display: flex; /* Flex row for chat and game pane */
-    flex: 1; /* Takes remaining height */
-    overflow: hidden; /* Prevents overflow from children */
+  display: flex;
+  flex: 1;
+  overflow: hidden;
 }
 
-/* Chat App Container (Left Pane) */
-.chat-pane { /* Corresponds to 'w-1/4 min-w-[300px] max-w-[400px] h-full flex flex-col' */
-  width: 25%; /* w-1/4 */
+.chat-pane {
+  width: 25%;
   min-width: 300px;
   max-width: 400px;
-  height: 100%; /* Take full height of its parent (content-area) */
+  height: 100%;
   display: flex;
   flex-direction: column;
-  border-right: 2px solid #e2e8f0; /* border-r-2 border-gray-200 */
-  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1); /* shadow-xl */
+  border-right: 2px solid #e2e8f0;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
 }
 
-/* Chat Header */
-.chat-header { /* Corresponds to 'bg-gradient-to-r from-purple-600 to-indigo-700 p-3 text-white shadow-md rounded-b-lg' */
-  padding: 12px; /* p-3 */
+.game-pane {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+
+/* ============================================= */
+/* 4. Component Styles              */
+/* ============================================= */
+
+/* --- General Buttons --- */
+button {
+  cursor: pointer;
+  outline: none;
+  transition: all 0.2s ease-in-out;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border: none;
+  border-radius: 8px;
+  padding: 10px 15px;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+/* --- Chat Components --- */
+.chat-header {
+  padding: 12px;
   color: white;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* shadow-md */
-  border-bottom-left-radius: 8px; /* rounded-b-lg */
-  border-bottom-right-radius: 8px; /* rounded-b-lg */
-  background: linear-gradient(to right, #6b46c1, #5a67d8); /* from-purple-600 to-indigo-700 */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+  background: linear-gradient(to right, #6b46c1, #5a67d8);
 }
-
-.chat-header h1 { /* text-2xl font-bold text-center */
-  font-size: 1.5rem; /* text-2xl */
-  font-weight: 700; /* font-bold */
+.chat-header h1 {
+  font-size: 1.5rem;
+  font-weight: 700;
   text-align: center;
-  margin-bottom: 4px; /* Adjust as needed */
+  margin-bottom: 4px;
 }
-
-.chat-header p { /* text-xs text-center opacity-80 mt-1 */
-  font-size: 0.75rem; /* text-xs */
-  text-align: center;
-  opacity: 0.8;
-  margin-top: 4px; /* mt-1 */
-}
-
-.chat-header span.user-id { /* font-mono */
-  font-family: monospace;
-}
-
-/* Chat Messages Area */
-.chat-messages-area { /* flex-1 overflow-y-auto p-3 space-y-3 */
+.chat-messages-area {
   flex: 1;
   overflow-y: auto;
-  padding: 12px; /* p-3 */
+  padding: 12px;
   display: flex;
   flex-direction: column;
-  gap: 12px; /* space-y-3 */
+  gap: 12px;
 }
-
-.chat-empty-message { /* text-center text-gray-500 mt-10 */
-  text-align: center;
-  color: #6b7280; /* text-gray-500 */
-  margin-top: 40px; /* mt-10 */
-}
-
-.chat-message-bubble { /* flex justify-end / justify-start */
+.chat-message-bubble {
   display: flex;
 }
-
-.chat-message-bubble.sent { /* justify-end */
+.chat-message-bubble.sent {
   justify-content: flex-end;
 }
-
-.chat-message-bubble.received { /* justify-start */
+.chat-message-bubble.received {
   justify-content: flex-start;
 }
-
-.chat-message-content { /* max-w-[80%] px-3 py-1.5 rounded-lg shadow-sm */
+.chat-message-content {
   max-width: 80%;
-  padding: 6px 12px; /* px-3 py-1.5 */
-  border-radius: 8px; /* rounded-lg */
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05); /* shadow-sm */
-  word-wrap: break-word; /* break-words */
+  padding: 6px 12px;
+  border-radius: 8px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  word-wrap: break-word;
 }
-
-.chat-message-content.sent { /* bg-blue-500 text-white rounded-br-none */
-  background-color: #3b82f6; /* bg-blue-500 */
+.chat-message-content.sent {
+  background-color: #3b82f6;
   color: white;
   border-bottom-right-radius: 0;
 }
-
-.chat-message-content.received { /* bg-white text-gray-800 rounded-bl-none */
+.chat-message-content.received {
   background-color: white;
-  color: #1f2937; /* text-gray-800 */
+  color: #1f2937;
   border-bottom-left-radius: 0;
 }
-
-.chat-message-meta { /* text-[10px] font-semibold opacity-90 mb-0.5 */
-  font-size: 10px;
-  font-weight: 600; /* font-semibold */
-  opacity: 0.9;
-  margin-bottom: 2px; /* mb-0.5 */
-}
-
-.chat-message-time { /* ml-2 text-[9px] opacity-70 */
-  margin-left: 8px; /* ml-2 */
-  font-size: 9px;
-  opacity: 0.7;
-}
-
-.chat-message-text { /* text-sm */
-  font-size: 0.875rem; /* text-sm */
-}
-
-/* Message Input Area */
-.message-input-form { /* p-3 bg-white border-t border-gray-200 shadow-inner rounded-t-lg */
-  padding: 12px; /* p-3 */
+.message-input-form {
+  padding: 12px;
   background-color: white;
-  border-top: 1px solid #e5e7eb; /* border-t border-gray-200 */
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.06); /* shadow-inner */
-  border-top-left-radius: 8px; /* rounded-t-lg */
-  border-top-right-radius: 8px; /* rounded-t-lg */
+  border-top: 1px solid #e5e7eb;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.06);
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
 }
-
-.message-input-container { /* flex items-center space-x-2 */
+.message-input-container {
   display: flex;
   align-items: center;
-  gap: 8px; /* space-x-2 */
+  gap: 8px;
   width: 5vw;
 }
-
-.message-input-field { /* flex-1 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-400 text-sm text-gray-800 */
+.message-input-field {
   flex: 1;
-  padding: 8px; /* p-2 */
-  border: 1px solid #d1d5db; /* border border-gray-300 */
-  border-radius: 8px; /* rounded-lg */
+  padding: 8px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
   outline: none;
-  font-size: 0.875rem; /* text-sm */
-  color: #1f2937; /* text-gray-800 */
-  
+  font-size: 0.875rem;
+  color: #1f2937;
 }
-
-.message-input-field:focus { /* focus:ring-1 focus:ring-blue-400 */
-  box-shadow: 0 0 0 1px #60a5fa; /* ring-1 ring-blue-400 */
-  border-color: #60a5fa; /* Adjust border color on focus */
+.message-input-field:focus {
+  box-shadow: 0 0 0 1px #60a5fa;
+  border-color: #60a5fa;
 }
-
-.message-send-button { /* px-4 py-2 bg-blue-500 text-white rounded-lg shadow-md hover:bg-blue-600 transition duration-200 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed text-sm font-semibold */
-  padding: 8px 16px; /* px-4 py-2 */
-  background-color: #3b82f6; /* bg-blue-500 */
+.message-send-button {
+  padding: 8px 16px;
+  background-color: #3b82f6;
   color: white;
-  border-radius: 8px; /* rounded-lg */
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* shadow-md */
-  font-size: 0.875rem; /* text-sm */
-  font-weight: 600; /* font-semibold */
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  font-size: 0.875rem;
+  font-weight: 600;
 }
-
-.message-send-button:hover { /* hover:bg-blue-600 */
+.message-send-button:hover {
   background-color: #2563eb;
 }
-
-.message-send-button:disabled { /* disabled:opacity-50 disabled:cursor-not-allowed */
+.message-send-button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
 
+/* --- Game Components --- */
+.game-navbar {
+  padding: 16px;
+  color: white;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  display: flex;
+  
+  align-items: center;
+  background: linear-gradient(to right, #1d4ed8, #06b6d4);
+  width: 100%;
+  
+  
+  justify-content: space-between; /* Pushes logo to left and other items to right */
+  align-items: center; /* Vertically centers everything */
+  padding: 0 1rem; /* Adds some space on the sides */
+  height: 8vh; /* Your original height */
+  box-sizing: border-box; /* Ensures padding doesn't add to the height */
 
-/* Main Game Layout (Right Pane) */
-.game-pane { /* flex-1 flex flex-col */
+}
+.navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem; /* Adds space between the button and timer */
+}
+.game-navbar button {
+  padding: 8px 20px;
+  font-size: 1.125rem;
+  font-weight: 500;
+  transition: all 0.3s ease-in-out;
+}
+.game-navbar button:hover:not(.active) {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+.game-content-area {
   flex: 1;
   display: flex;
-  flex-direction: column; /* Changed from row to column to ensure game content fills remaining height */
-  overflow: hidden; /* Added to manage overflow in the game content */
-}
-
-/* Game Navigation Bar */
-.game-navbar { /* bg-gradient-to-r from-blue-700 to-cyan-600 p-4 text-white shadow-lg flex justify-around items-center rounded-b-lg */
-  padding: 16px; /* p-4 */
-  color: white;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* shadow-lg */
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  /* Removed border-bottom-left/right-radius as it's now at the top of a column */
-  background: linear-gradient(to right, #1d4ed8, #06b6d4); /* from-blue-700 to-cyan-600 */
-  width: 100%; /* Ensure it spans the full width of its parent (.game-pane) */
-}
-
-.game-navbar button { /* px-5 py-2 rounded-lg text-lg font-medium transition duration-300 ease-in-out */
-  padding: 8px 20px; /* px-5 py-2 */
-  border-radius: 8px; /* rounded-lg */
-  font-size: 1.125rem; /* text-lg */
-  font-weight: 500; /* font-medium */
-  transition: all 0.3s ease-in-out;
-}
-
-.game-navbar button.active { /* bg-blue-500 shadow-md transform scale-105 */
-  background-color: #3b82f6; /* bg-blue-500 */
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* shadow-md */
-  transform: scale(1.05);
-}
-
-.game-navbar button:hover:not(.active) { /* hover:bg-blue-600 */
-  background-color: rgba(255, 255, 255, 0.2); /* Lighter hover for non-active */
-}
-
-
-/* Main Game Content Area */
-.game-content-area { /* flex-1 flex items-center justify-center p-6 overflow-auto */
-  flex: 1; /* Takes up remaining vertical space in game-pane */
-  display: flex;
   align-items: center;
   justify-content: center;
-  padding: 24px; /* p-6 */
-  overflow: auto; /* overflow-auto */
-}
-
-/* Game Placeholder Components */
-.game-card { /* flex flex-col items-center justify-center h-full p-8 bg-gray-50 rounded-lg shadow-inner */
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100%; /* Take full height within its parent (game-content-area) */
-  width: 100%; /* Take full width within its parent (game-content-area) */
-  padding: 32px; /* p-8 */
-  background-color: #f9fafb; /* bg-gray-50 */
-  border-radius: 8px; /* rounded-lg */
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.06); /* shadow-inner */
-  text-align: center; /* Ensure text is centered within the card */
-}
-
-.game-icon { /* text-6xl mb-4 */
-  font-size: 4rem; /* text-6xl */
-  margin-bottom: 16px; /* mb-4 */
-}
-
-.game-card h2 { /* text-4xl font-bold text-gray-800 mb-2 */
-  font-size: 2.25rem; /* text-4xl */
-  font-weight: 700; /* font-bold */
-  color: #1f2937; /* text-gray-800 */
-  margin-bottom: 8px; /* mb-2 */
-}
-
-.game-card p { /* text-lg text-gray-600 text-center */
-  font-size: 1.125rem; /* text-lg */
-  color: #4b5563; /* text-gray-600 */
-  text-align: center;
-  margin-bottom: 0; /* No bottom margin by default */
-}
-
-.game-start-button { /* mt-6 px-8 py-3 text-xl font-semibold rounded-lg shadow-md hover:bg-... transition duration-300 transform hover:scale-105 */
-  margin-top: 24px; /* mt-6 */
-  padding: 12px 32px; /* px-8 py-3 */
-  font-size: 1.25rem; /* text-xl */
-  font-weight: 600; /* font-semibold */
-  border-radius: 8px; /* rounded-lg */
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* shadow-md */
-  transition: all 0.3s ease-in-out;
-}
-
-/* Specific button colors for games */
-.game-start-button.green {
-    background-color: #22c55e; /* bg-green-500 */
-    color: white;
-}
-.game-start-button.green:hover {
-    background-color: #16a34a; /* hover:bg-green-600 */
-    transform: scale(1.05);
-}
-
-.game-start-button.red {
-    background-color: #ef4444; /* bg-red-500 */
-    color: white;
-}
-.game-start-button.red:hover {
-    background-color: #dc2626; /* hover:bg-red-600 */
-    transform: scale(1.05);
-}
-
-.game-start-button.yellow {
-    background-color: #f59e0b; /* bg-yellow-500 */
-    color: #1f2937; /* text-gray-800 */
-}
-.game-start-button.yellow:hover {
-    background-color: #d97706; /* hover:bg-yellow-600 */
-    transform: scale(1.05);
-}
-
-
-:root {
-            --color-primary: #5dade2;
-            --color-secondary: #ff8fab;
-            --color-accent: #a5dff9;
-            --color-text: #5a5a5a;
-            --color-bg: #fff9f9;
-            --color-panel: #fffefc;
-            --color-border: #ffd6e7;
-            --color-dark-bg: #2d2d2d;
-            --color-dark-panel: #3a3a3a;
-            --color-dark-text: #f0f0f0;
-            --color-dark-border: #555;
-        }
-
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-        }
-
-        @keyframes wiggle {
-            0%, 100% { transform: rotate(0deg); }
-            25% { transform: rotate(5deg); }
-            75% { transform: rotate(-5deg); }
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-5px); }
-        }
-
-        body {
-            font-family: 'Gochi Hand', cursive;
-            background-color: var(--color-bg);
-            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M54 50c-2 0-4-2-4-4s2-4 4-4 4 2 4 4-2 4-4 4zm0-10c-3 0-6 3-6 6s3 6 6 6 6-3 6-6-3-6-6-6zm-48 0c-3 0-6 3-6 6s3 6 6 6 6-3 6-6-3-6-6-6zm0 10c-2 0-4-2-4-4s2-4 4-4 4 2 4 4-2 4-4 4zm6-40c-2 0-4-2-4-4s2-4 4-4 4 2 4 4-2 4-4 4zm0 10c-2 0-4-2-4-4s2-4 4-4 4 2 4 4-2 4-4 4zm10-20c-2 0-4-2-4-4s2-4 4-4 4 2 4 4-2 4-4 4zm20 0c-2 0-4-2-4-4s2-4 4-4 4 2 4 4-2 4-4 4zm-10 0c-2 0-4-2-4-4s2-4 4-4 4 2 4 4-2 4-4 4zm-10 20c-2 0-4-2-4-4s2-4 4-4 4 2 4 4-2 4-4 4zm20 0c-2 0-4-2-4-4s2-4 4-4 4 2 4 4-2 4-4 4zm10-20c-2 0-4-2-4-4s2-4 4-4 4 2 4 4-2 4-4 4zm-10 0c-2 0-4-2-4-4s2-4 4-4 4 2 4 4-2 4-4 4z' fill='%23ffd6e7' fill-opacity='0.2' fill-rule='evenodd'/%3E%3C/svg%3E");
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            color: var(--color-text);
-            letter-spacing: 0.5px;
-            transition: background-color 0.3s ease;
-        }
-
-        body.dark-mode {
-            background-color: var(--color-dark-bg);
-            color: var(--color-dark-text);
-            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M54 50c-2 0-4-2-4-4s2-4 4-4 4 2 4 4-2 4-4 4zm0-10c-3 0-6 3-6 6s3 6 6 6 6-3 6-6-3-6-6-6zm-48 0c-3 0-6 3-6 6s3 6 6 6 6-3 6-6-3-6-6-6zm0 10c-2 0-4-2-4-4s2-4 4-4 4 2 4 4-2 4-4 4zm6-40c-2 0-4-2-4-4s2-4 4-4 4 2 4 4-2 4-4 4zm0 10c-2 0-4-2-4-4s2-4 4-4 4 2 4 4-2 4-4 4zm10-20c-2 0-4-2-4-4s2-4 4-4 4 2 4 4-2 4-4 4zm20 0c-2 0-4-2-4-4s2-4 4-4 4 2 4 4-2 4-4 4zm-10 0c-2 0-4-2-4-4s2-4 4-4 4 2 4 4-2 4-4 4zm-10 20c-2 0-4-2-4-4s2-4 4-4 4 2 4 4-2 4-4 4zm20 0c-2 0-4-2-4-4s2-4 4-4 4 2 4 4-2 4-4 4zm10-20c-2 0-4-2-4-4s2-4 4-4 4 2 4 4-2 4-4 4zm-10 0c-2 0-4-2-4-4s2-4 4-4 4 2 4 4-2 4-4 4z' fill='%23666' fill-opacity='0.1' fill-rule='evenodd'/%3E%3C/svg%3E");
-        }
-
-        .container {
-            display: flex;
-            max-width: 1000px;
-            width: 90%;
-            background-color: var(--color-panel);
-            border-radius: 30px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-            border: 3px solid var(--color-border);
-            transition: all 0.3s ease;
-            position: relative;
-        }
-
-        body.dark-mode .container {
-            background-color: var(--color-dark-panel);
-            border-color: var(--color-dark-border);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-        }
-
-        .left-section {
-            flex: 1;
-            padding: 40px;
-            border-right: 3px dotted var(--color-border);
-        }
-
-        body.dark-mode .left-section {
-            border-right-color: var(--color-dark-border);
-        }
-
-        .right-section {
-            flex: 1;
-            padding: 40px;
-        }
-
-        .game-title {
-            background: linear-gradient(135deg, #5dade2, #ff8fab);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            font-size: 52px;
-            margin-bottom: 5px;
-            text-shadow: 3px 3px 0px rgba(0, 0, 0, 0.05);
-            transform: rotate(-2deg);
-            display: inline-block;
-        }
-
-        .tagline {
-            font-size: 22px;
-            color: var(--color-secondary);
-            margin-bottom: 30px;
-            transform: rotate(1deg);
-            position: relative;
-            display: inline-block;
-        }
-
-        body.dark-mode .tagline {
-            color: #ffb6d9;
-        }
-
-        .tagline::after {
-            content: '';
-            position: absolute;
-            bottom: -5px;
-            left: 0;
-            width: 100%;
-            height: 3px;
-            background: linear-gradient(90deg, transparent, var(--color-secondary), transparent);
-            border-radius: 3px;
-        }
-
-        body.dark-mode .tagline::after {
-            background: linear-gradient(90deg, transparent, #ffb6d9, transparent);
-        }
-
-        .panel {
-            background-color: var(--color-panel);
-            border-radius: 20px;
-            padding: 25px;
-            margin-bottom: 25px;
-            border: 2px dashed var(--color-border);
-            transform: rotate(0.5deg);
-            transition: all 0.3s ease;
-        }
-
-        body.dark-mode .panel {
-            background-color: var(--color-dark-panel);
-            border-color: var(--color-dark-border);
-        }
-
-        .panel:hover {
-            transform: rotate(0deg) scale(1.01);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-        }
-
-        .panel-title {
-            font-size: 26px;
-            margin-bottom: 15px;
-            color: var(--color-primary);
-            text-decoration: underline wavy var(--color-border);
-        }
-
-        body.dark-mode .panel-title {
-            color: #7fbfff;
-            text-decoration-color: #555;
-        }
-
-        .input-group {
-            margin-bottom: 20px;
-            transform: rotate(-0.5deg);
-        }
-
-        label {
-            display: block;
-            margin-bottom: 8px;
-            color: var(--color-secondary);
-            font-size: 20px;
-        }
-
-        body.dark-mode label {
-            color: #ffb6d9;
-        }
-
-        input, select {
-            
-            padding: 12px 15px;
-            border: 3px solid var(--color-border);
-            border-radius: 15px;
-            font-family: 'Gochi Hand', cursive;
-            font-size: 18px;
-            background-color: var(--color-panel);
-            color: var(--color-text);
-            transition: all 0.3s ease;
-            margin: 10px 10px;
-            width: 13vw; /* Adjusted width for better responsiveness */
-        }
-
-        body.dark-mode input, body.dark-mode select {
-            background-color: var(--color-dark-panel);
-            border-color: var(--color-dark-border);
-            color: var(--color-dark-text);
-        }
-
-        input:focus, select:focus {
-            outline: none;
-            border-color: var(--color-primary);
-            background-color: rgba(95, 173, 226, 0.1);
-        }
-
-        body.dark-mode input:focus, body.dark-mode select:focus {
-            background-color: rgba(95, 173, 226, 0.2);
-        }
-
-        .emoji-avatar {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 50px;
-            height: 100px;
-            background-color: var(--color-panel);
-            border-radius: 15px;
-            border: 3px dotted var(--color-border);
-            margin-bottom: 20px;
-            cursor: pointer;
-            transform: rotate(-1deg);
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        body.dark-mode .emoji-avatar {
-            background-color: var(--color-dark-panel);
-            border-color: var(--color-dark-border);
-        }
-
-        .emoji-avatar:hover {
-            background-color: rgba(255, 182, 217, 0.1);
-            border-style: solid;
-            transform: rotate(1deg) scale(1.05);
-        }
-
-        .emoji-avatar::after {
-            content: '✏️ Click to edit';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: rgba(0, 0, 0, 0.5);
-            color: white;
-            font-size: 14px;
-            padding: 5px;
-            transform: translateY(100%);
-            transition: transform 0.3s ease;
-        }
-
-        .emoji-avatar:hover::after {
-            transform: translateY(0);
-        }
-
-        .btn {
-            background-color: var(--color-primary);
-            color: white;
-            border: none;
-            padding: 12px 30px;
-            border-radius: 50px;
-            font-family: 'Gochi Hand', cursive;
-            font-size: 22px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 3px 3px 0px rgba(0, 0, 0, 0.1);
-            transform: rotate(-1deg);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .btn:hover {
-            background-color: #48c4ff;
-            transform: rotate(1deg) translateY(-3px);
-            box-shadow: 5px 5px 0px rgba(0, 0, 0, 0.1);
-        }
-
-        .btn:active {
-            transform: scale(0.98);
-        }
-
-        .btn-secondary {
-            background-color: var(--color-secondary);
-            box-shadow: 3px 3px 0px rgba(255, 182, 217, 0.3);
-        }
-
-        .btn-secondary:hover {
-            background-color: #ff6b9d;
-        }
-
-        .btn-emoji {
-            margin-right: 10px;
-            font-size: 24px;
-            animation: float 2s ease-in-out infinite;
-        }
-
-        .rules-card {
-            background-color: var(--color-panel);
-            border-radius: 20px;
-            padding: 30px;
-            border: 2px dashed var(--color-border);
-            transform: rotate(-1deg);
-            transition: all 0.3s ease;
-        }
-
-        body.dark-mode .rules-card {
-            background-color: var(--color-dark-panel);
-            border-color: var(--color-dark-border);
-        }
-
-        .rules-card:hover {
-            transform: rotate(0deg);
-        }
-
-        .rules-title {
-            font-size: 32px;
-            margin-bottom: 20px;
-            color: var(--color-primary);
-            text-align: center;
-            text-decoration: underline wavy var(--color-border);
-        }
-
-        body.dark-mode .rules-title {
-            color: #7fbfff;
-            text-decoration-color: #555;
-        }
-
-        .rules-list {
-            list-style-type: none;
-            padding: 0;
-        }
-
-        .rules-list li {
-            margin-bottom: 20px;
-            padding-left: 50px;
-            position: relative;
-            font-size: 20px;
-            line-height: 1.4;
-            color: var(--color-text);
-        }
-
-        body.dark-mode .rules-list li {
-            color: var(--color-dark-text);
-        }
-
-        .emoji-icon {
-            position: absolute;
-            left: 0;
-            top: 0;
-            font-size: 24px;
-            background-color: var(--color-accent);
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 2px 2px 0px rgba(0, 0, 0, 0.1);
-            animation: bounce 2s infinite;
-        }
-
-        body.dark-mode .emoji-icon {
-            background-color: #3a7ca5;
-        }
-
-        .footer {
-            text-align: center;
-            margin-top: 30px;
-            transform: rotate(1deg);
-            color: var(--color-text);
-        }
-
-        body.dark-mode .footer {
-            color: var(--color-dark-text);
-        }
-
-        .social-icons {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin-top: 15px;
-        }
-
-        .social-icon {
-            font-size: 24px;
-            color: var(--color-primary);
-            transition: all 0.3s ease;
-        }
-
-        .social-icon:hover {
-            color: var(--color-secondary);
-            transform: scale(1.2) rotate(10deg);
-        }
-
-        body.dark-mode .social-icon {
-            color: #7fbfff;
-        }
-
-        body.dark-mode .social-icon:hover {
-            color: #ffb6d9;
-        }
-
-        .theme-toggle {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: none;
-            border: none;
-            font-size: 24px;
-            cursor: pointer;
-            animation: wiggle 5s infinite;
-            transform: rotate(0deg);
-        }
-
-        .theme-toggle:hover {
-            animation: none;
-            transform: rotate(30deg) scale(1.1);
-        }
-
-        .emoji-picker {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background-color: var(--color-panel);
-            border: 3px solid var(--color-border);
-            border-radius: 20px;
-            padding: 20px;
-            z-index: 100;
-            display: none;
-            flex-wrap: wrap;
-            gap: 10px;
-            width: 300px;
-            max-height: 400px;
-            overflow-y: auto;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-        }
-
-        body.dark-mode .emoji-picker {
-            background-color: var(--color-dark-panel);
-            border-color: var(--color-dark-border);
-        }
-
-        .emoji-option {
-            font-size: 30px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            padding: 5px;
-            border-radius: 10px;
-        }
-
-        .emoji-option:hover {
-            background-color: var(--color-border);
-            transform: scale(1.2);
-        }
-
-        body.dark-mode .emoji-option:hover {
-            background-color: var(--color-dark-border);
-        }
-
-        .overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: rgba(0, 0, 0, 0.5);
-            z-index: 99;
-            display: none;
-        }
-
-        .loading-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: rgba(255, 255, 255, 0.9);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 999;
-            display: none;
-        }
-
-        body.dark-mode .loading-screen {
-            background-color: rgba(0, 0, 0, 0.9);
-        }
-
-        .loading-emoji {
-            font-size: 50px;
-            margin-bottom: 20px;
-            animation: bounce 1s infinite;
-        }
-
-        .loading-text {
-            font-size: 24px;
-            color: var(--color-text);
-        }
-
-        body.dark-mode .loading-text {
-            color: var(--color-dark-text);
-        }
-
-        @media (max-width: 768px) {
-            .container {
-                flex-direction: column;
-            }
-            .left-section {
-                border-right: none;
-                border-bottom: 3px dotted var(--color-border);
-            }
-            
-            .game-title {
-                font-size: 42px;
-            }
-            
-            .rules-list li {
-                font-size: 18px;
-            }
-
-            body.dark-mode .left-section {
-                border-bottom-color: var(--color-dark-border);
-            }
-        }
-
-        /* Tooltip */
-        .tooltip {
-            position: relative;
-            display: inline-block;
-        }
-
-        .tooltip .tooltiptext {
-            visibility: hidden;
-            width: 120px;
-            background-color: #555;
-            color: #fff;
-            text-align: center;
-            border-radius: 6px;
-            padding: 5px;
-            position: absolute;
-            z-index: 1;
-            bottom: 125%;
-            left: 50%;
-            margin-left: -60px;
-            opacity: 0;
-            transition: opacity 0.3s;
-            font-size: 14px;
-        }
-
-        .tooltip .tooltiptext::after {
-            content: "";
-            position: absolute;
-            top: 100%;
-            left: 50%;
-            margin-left: -5px;
-            border-width: 5px;
-            border-style: solid;
-            border-color: #555 transparent transparent transparent;
-        }
-
-        .tooltip:hover .tooltiptext {
-            visibility: visible;
-            opacity: 1;
-        }
-
-
-        .game-content-area {
+  padding: 24px;
+  overflow: auto;
   background-image: url('/paper5.jpg'); 
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
-  padding: 10px;
   border-radius: 12px;
+}
+.game-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+  padding: 32px;
+  background-color: #f9fafb;
+  border-radius: 8px;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.06);
+  text-align: center;
+}
+.game-start-button {
+  margin-top: 24px;
+  padding: 12px 32px;
+  font-size: 1.25rem;
+  font-weight: 600;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease-in-out;
+}
+.game-start-button.green { background-color: #22c55e; color: white; }
+.game-start-button.green:hover { background-color: #16a34a; transform: scale(1.05); }
+.game-start-button.red { background-color: #ef4444; color: white; }
+.game-start-button.red:hover { background-color: #dc2626; transform: scale(1.05); }
+.game-start-button.yellow { background-color: #f59e0b; color: #1f2937; }
+.game-start-button.yellow:hover { background-color: #d97706; transform: scale(1.05); }
+
+/* --- Playful/Themed Components --- */
+.panel {
+    background-color: var(--color-panel);
+    border-radius: 20px;
+    padding: 25px;
+    margin-bottom: 25px;
+    border: 2px dashed var(--color-border);
+    transition: all 0.3s ease;
+}
+.panel:hover {
+    transform: scale(1.01);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+.btn {
+  background-color: var(--color-primary);
+  color: white;
+  border: none;
+  padding: 12px 30px;
+  border-radius: 50px;
+  font-family: 'Gochi Hand', cursive;
+  font-size: 22px;
+  cursor: pointer;
+  box-shadow: 3px 3px 0px rgba(0, 0, 0, 0.1);
+}
+.btn:hover {
+  background-color: #48c4ff;
+  transform: translateY(-3px);
+  box-shadow: 5px 5px 0px rgba(0, 0, 0, 0.1);
+}
+
+/* --- Utility Components --- */
+.loading-screen {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: rgba(255, 255, 255, 0.9);
+  display: none; /* Change to flex to show */
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+body.dark-mode .loading-screen {
+  background-color: rgba(0, 0, 0, 0.9);
+}
+.loading-emoji {
+  font-size: 50px;
+  margin-bottom: 20px;
+  animation: bounce 1s infinite;
+}
+.tooltip {
+  position: relative;
+  display: inline-block;
+}
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 120px;
+  background-color: #555;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px;
+  position: absolute;
+  z-index: 1;
+  bottom: 125%;
+  left: 50%;
+  margin-left: -60px;
+  opacity: 0;
+  transition: opacity 0.3s;
+  font-size: 14px;
+}
+.tooltip .tooltiptext::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border: 5px solid transparent;
+  border-top-color: #555;
+}
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+  opacity: 1;
+}
+
+/* ============================================= */
+/* 5. Responsive                 */
+/* ============================================= */
+
+@media (max-width: 768px) {
+  .chat-pane {
+    width: 100%;
+    max-width: none;
+    height: 40%; /* Example height for mobile */
+  }
+  .content-area {
+    flex-direction: column;
+  }
+  .game-title {
+    font-size: 42px;
+  }
 }

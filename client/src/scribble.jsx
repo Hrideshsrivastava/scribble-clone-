@@ -157,31 +157,34 @@ useEffect(() => {
     overflow: 'hidden',
   }}
 >
-  <div
-    style={{
-      flexGrow: 1,
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      maxHeight: '70vh',
-      maxWidth: '70vw',
-      margin: '2vh '
-    }}
-    className='canvas-container'
-  >
-    
+  <div 
+  style={{
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    gap: '20px', // Adds space between canvas and toolbar
+    padding: '20px',
+  }}
+>
+  {/* Canvas Container */}
+  <div style={{ border: '2px solid #000' }}>
     <canvas
-         ref={canvasRef}
-         onMouseDown={startDrawing}
-         onMouseMove={draw}
-         onMouseUp={stopDrawing}
-         onMouseLeave={stopDrawing}
-         style={{ border: '2px solid #000', backgroundColor: '#fff' ,height:'90%'}}
-      />
+      ref={canvasRef}
+      onMouseDown={startDrawing}
+      onMouseMove={draw}
+      onMouseUp={stopDrawing}
+      onMouseLeave={stopDrawing}
+      // Set fixed dimensions as attributes for drawing resolution
+      width="800" 
+      height="600"
+      style={{ backgroundColor: '#fff', display: 'block' }} // 'display: block' removes extra space below
+    />
   </div>
 
-  {/* Toolbar */}
-  <div className="toolbar-container">
+  {/* Toolbar (Keep your existing toolbar code here) */}
+  
+    
+    <div className="toolbar-container">
         <label className="toolbar-control">
           Pen Color:
           <input
@@ -226,6 +229,12 @@ useEffect(() => {
           Clear
         </button>
       </div>
+  
+</div>
+  
+
+  
+  
       </div>
 
   );
